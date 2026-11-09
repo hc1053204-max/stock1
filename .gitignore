@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Local environments
+.venv/
+.env
+.env.*
+!.env.example
+
+# Flutter/Dart generated files
+flutter_app/.dart_tool/
+flutter_app/.packages
+flutter_app/.flutter-plugins
+flutter_app/.flutter-plugins-dependencies
+flutter_app/build/
+flutter_app/.idea/
+flutter_app/android/.gradle/
+flutter_app/android/local.properties
+flutter_app/ios/Pods/
+flutter_app/ios/.symlinks/
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/

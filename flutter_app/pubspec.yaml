@@ -1,0 +1,15 @@
+name: stock_analysis_app
+description: AI 股票分析 App 的 Flutter 前端範例。
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+
+flutter:
+  uses-material-design: true

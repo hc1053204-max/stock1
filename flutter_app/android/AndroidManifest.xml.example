@@ -1,0 +1,12 @@
+<!-- 將此設定合併到 flutter create 產生的 android/app/src/main/AndroidManifest.xml。 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:label="stock_analysis_app"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+        <!-- 正式環境請改用 HTTPS，並移除 usesCleartextTraffic。 -->
+    </application>
+</manifest>

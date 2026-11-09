@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-stock-analysis-api:latest
+    container_name: ai-stock-analysis-api
+    ports:
+      - "8000:8000"
+    environment:
+      TZ: Asia/Taipei
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
