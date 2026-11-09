@@ -129,6 +129,8 @@ Android 開發階段的 HTTP 權限參考 `android/AndroidManifest.xml.example`�
 - 顯示成交量柱狀圖
 - 顯示近 1 個月、3 個月、6 個月與 1 年資料區間
 - 顯示最新交易日 OHLCV 與歷史資料清單
+- 網頁預覽支援 Bollinger Bands 與 KD 指標切換
+- 網頁預覽支援自選股新增、移除與 localStorage 保存
 - 顯示收盤價、MA20、RSI14、MACD、MACD Signal、成交量
 - 偏多、偏空、觀望、資料不足顏色標籤
 - 載入中、錯誤與下拉重新整理狀態

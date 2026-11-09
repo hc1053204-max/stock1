@@ -41,10 +41,17 @@ class HistoryItem(BaseModel):
     MA5: float | None = None
     MA20: float | None = None
     MA60: float | None = None
+    BBUpper: float | None = None
+    BBMiddle: float | None = None
+    BBLower: float | None = None
     RSI14: float | None = None
     MACD: float | None = None
     MACDSignal: float | None = None
     MACDHistogram: float | None = None
+    RSV9: float | None = None
+    K9: float | None = None
+    D9: float | None = None
+    J9: float | None = None
 
 
 class HistoryResponse(BaseModel):
@@ -65,10 +72,17 @@ class AnalysisResponse(BaseModel):
     ma5: float | None
     ma20: float | None
     ma60: float | None
+    bb_upper: float | None
+    bb_middle: float | None
+    bb_lower: float | None
     rsi14: float | None
     macd: float | None
     macd_signal: float | None
     macd_histogram: float | None
+    rsv9: float | None
+    k9: float | None
+    d9: float | None
+    j9: float | None
     trend: str
     data_source: str
 

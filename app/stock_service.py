@@ -79,13 +79,20 @@ def download_history(
 
 
 def add_indicators(frame: pd.DataFrame) -> pd.DataFrame:
-    """計算 MA5/20/60、RSI14 與 MACD(12,26,9)。"""
+    """計算均線、RSI、MACD、Bollinger Bands 與 KD。"""
     result = frame.copy()
     close = result["Close"].astype(float)
 
     result["MA5"] = close.rolling(window=5, min_periods=5).mean()
     result["MA20"] = close.rolling(window=20, min_periods=20).mean()
     result["MA60"] = close.rolling(window=60, min_periods=60).mean()
+
+    # Bollinger Bands：20 日均線，上下軌為均線加減 2 個標準差。
+    bb_middle = close.rolling(window=20, min_periods=20).mean()
+    bb_std = close.rolling(window=20, min_periods=20).std(ddof=0)
+    result["BBMiddle"] = bb_middle
+    result["BBUpper"] = bb_middle + 2 * bb_std
+    result["BBLower"] = bb_middle - 2 * bb_std
 
     # RSI 使用 Wilder 常用的 exponential moving average 版本。
     delta = close.diff()
@@ -105,6 +112,16 @@ def add_indicators(frame: pd.DataFrame) -> pd.DataFrame:
         span=9, adjust=False, min_periods=9
     ).mean()
     result["MACDHistogram"] = result["MACD"] - result["MACDSignal"]
+
+    # KD：9 日 RSV，K/D 使用 alpha=1/3 的平滑方式，J=3K-2D。
+    lowest_9 = result["Low"].rolling(window=9, min_periods=9).min()
+    highest_9 = result["High"].rolling(window=9, min_periods=9).max()
+    denominator = (highest_9 - lowest_9).replace(0, pd.NA)
+    rsv = ((close - lowest_9) / denominator * 100).fillna(50.0)
+    result["RSV9"] = rsv
+    result["K9"] = rsv.ewm(alpha=1 / 3, adjust=False, min_periods=1).mean()
+    result["D9"] = result["K9"].ewm(alpha=1 / 3, adjust=False, min_periods=1).mean()
+    result["J9"] = 3 * result["K9"] - 2 * result["D9"]
 
     return result
 
@@ -160,10 +177,17 @@ def latest_summary(frame: pd.DataFrame, symbol: str, market: Market) -> dict:
         "ma5": number("MA5"),
         "ma20": number("MA20"),
         "ma60": number("MA60"),
+        "bb_upper": number("BBUpper"),
+        "bb_middle": number("BBMiddle"),
+        "bb_lower": number("BBLower"),
         "rsi14": number("RSI14"),
         "macd": number("MACD"),
         "macd_signal": number("MACDSignal"),
         "macd_histogram": number("MACDHistogram"),
+        "rsv9": number("RSV9"),
+        "k9": number("K9"),
+        "d9": number("D9"),
+        "j9": number("J9"),
         "trend": trend,
         "data_source": "Yahoo Finance via yfinance",
     }

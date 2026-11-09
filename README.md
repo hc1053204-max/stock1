@@ -4,8 +4,10 @@
 
 - OHLCV：開盤、最高、最低、收盤、成交量
 - MA5、MA20、MA60
+- Bollinger Bands（20 日均線、上下 2 倍標準差）
 - RSI14
 - MACD、MACD Signal、MACD Histogram
+- KD（RSV9、K9、D9、J9）
 - 基於技術指標的簡單趨勢摘要：`bullish`、`bearish`、`neutral`
 
 > 本範例是學習與專題原型，不是投資建議，也不保證資料即時或完整。Yahoo Finance / yfinance 的資料使用須遵守其服務條款；正式產品應評估合法授權的市場資料來源。
@@ -123,3 +125,13 @@ stock-api/
 4. 將規則式 `trend` 替換成可驗證的 XGBoost / Random Forest 分類模型。
 5. 將 CORS 的 `allow_origins=["*"]` 改成正式前端網域。
 6. 增加速率限制、日誌、身份驗證與資料來源監控。
+
+## 8. 網頁版互動預覽功能
+
+`flutter_app/preview/index.html` 提供可直接在瀏覽器操作的版本，目前包含：
+
+- Bollinger Bands 指標切換
+- KD 指標切換
+- 自選股新增與移除
+- 使用瀏覽器 `localStorage` 保存自選股
+- 若 FastAPI 在 `http://127.0.0.1:8000` 執行，預覽會優先讀取實際 API 資料；連線失敗時保留示範資料
