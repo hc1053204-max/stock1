@@ -61,6 +61,24 @@ flutter pub get
 flutter run
 ```
 
+## 瀏覽器互動預覽
+
+由於此範例的執行環境不一定安裝 Flutter SDK，另提供不依賴 Flutter 的手機尺寸互動預覽：
+
+```bash
+cd flutter_app/preview
+python3 -m http.server 8080
+```
+
+開啟 `http://127.0.0.1:8080` 後，可以點選股票、查看分析卡片，再進入 K 線與歷史資料頁面。
+
+- `preview/index.html`：可點擊的互動預覽
+- `UI_DESIGN.md`：色彩、元件、頁面配置與互動規範
+- `UI_FLOW.md`：Mermaid 頁面流程原始碼
+- `UI_FLOW.png`：頁面流程圖
+- `preview/home-preview.png`：首頁預覽截圖
+- `preview/history-preview.png`：K 線頁預覽截圖
+
 ## FastAPI 位址設定
 
 ### Android Emulator
