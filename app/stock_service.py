@@ -1,12 +1,23 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from datetime import date
+import threading
+import time
 from typing import Literal
 
 import pandas as pd
 import yfinance as yf
 
 Market = Literal["tw", "us"]
+
+# Yahoo Finance calls are relatively slow and are shared by both API endpoints.
+# Keep a short-lived, bounded in-memory cache to avoid downloading identical
+# history repeatedly while ensuring callers cannot mutate cached DataFrames.
+_HISTORY_CACHE_TTL_SECONDS = 300
+_HISTORY_CACHE_MAX_ENTRIES = 128
+_HISTORY_CACHE: OrderedDict[tuple[str, str, str], tuple[float, pd.DataFrame]] = OrderedDict()
+_HISTORY_CACHE_LOCK = threading.RLock()
 
 
 class StockDataError(Exception):
@@ -45,8 +56,20 @@ def download_history(
     period: str = "1y",
     interval: str = "1d",
 ) -> pd.DataFrame:
-    """從 Yahoo Finance 下載歷史 OHLCV 資料。"""
+    """從 Yahoo Finance 下載歷史 OHLCV 資料，並短暫快取成功結果。"""
     ticker = normalize_symbol(symbol, market)
+    cache_key = (ticker, period, interval)
+    now = time.monotonic()
+
+    with _HISTORY_CACHE_LOCK:
+        cached = _HISTORY_CACHE.get(cache_key)
+        if cached is not None:
+            cached_at, cached_frame = cached
+            if now - cached_at < _HISTORY_CACHE_TTL_SECONDS:
+                _HISTORY_CACHE.move_to_end(cache_key)
+                return cached_frame.copy(deep=True)
+            del _HISTORY_CACHE[cache_key]
+
     try:
         frame = yf.download(
             ticker,
@@ -75,6 +98,14 @@ def download_history(
     frame = frame.dropna(subset=["Open", "High", "Low", "Close"])
     if frame.empty:
         raise StockDataError(f"{ticker} 沒有可用的價格資料")
+
+    # Cache only validated data. Return a separate copy so downstream indicator
+    # calculations cannot mutate the shared cached frame.
+    with _HISTORY_CACHE_LOCK:
+        _HISTORY_CACHE[cache_key] = (time.monotonic(), frame.copy(deep=True))
+        _HISTORY_CACHE.move_to_end(cache_key)
+        while len(_HISTORY_CACHE) > _HISTORY_CACHE_MAX_ENTRIES:
+            _HISTORY_CACHE.popitem(last=False)
     return frame
 
 
